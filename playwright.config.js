@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  globalSetup: './tests/utils/globalSetup.js',
+  globalSetup: './tests/config/globalSetup.js',
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: false,

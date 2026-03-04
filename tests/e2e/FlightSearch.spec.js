@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
-const { FlightSearchPage } = require('./pages/FlightSearchPage');
-const searchFlight = JSON.parse(JSON.stringify(require('./utils/data/searchFlight.json')));
+const { FlightSearchPage } = require('../pages/FlightSearchPage');
+const searchFlight = JSON.parse(JSON.stringify(require('../data/searchFlight.json')));
 
 for(const data of searchFlight)
 {
