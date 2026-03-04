@@ -8,11 +8,11 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   reporter: [['html', {open: 'always'}], ['allure-playwright']],
-  timeout: 5 * 90 * 1000,
+  timeout: 30000,
 
   use: {
     headless: false,
-    actionTimeout: 60 * 1000,
+    actionTimeout: 5000,
     viewport: {width: 1960, height: 1080},
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
