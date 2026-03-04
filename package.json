@@ -1,0 +1,23 @@
+{
+  "name": "Playwright_Framework",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test:sit": "cross-env Test_Env=sit npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.2",
+    "allure-playwright": "^3.4.5"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "crypto-js": "^4.2.0",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.2.3"
+  }
+}
