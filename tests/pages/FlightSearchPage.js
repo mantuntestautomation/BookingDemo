@@ -6,7 +6,7 @@ class FlightSearchPage {
         this.fromSelect = page.locator("//select[@name='fromPort']");
         this.toSelect = page.locator("//select[@name='toPort']");
         this.findFlightsBtn = page.getByRole('button', { name: 'Find Flights' });
-        this.resultHeader = page.locator("//th[contains(., 'Departs:')]");
+        this.resultSource = page.locator("//th[contains(., 'Departs:')]");
         this.resultDestination = page.locator("//th[contains(., 'Departs:')]/following-sibling::th[1]");
     }
 
@@ -28,7 +28,7 @@ class FlightSearchPage {
     }
 
     async getFlightSourceDestination() {
-        const source = await this.resultHeader.first().textContent();
+        const source = await this.resultSource.first().textContent();
         const destination = await this.resultDestination.first().textContent();
         return {
             source: source ? source.trim().replace('Departs: ', '') : '',
