@@ -1,8 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { FlightSearchPage } = require('../pages/FlightSearchPage');
 
-test('@Regression TC01_Search flights and validate source & destination', async ({ page }) => {
-    
+test.beforeEach(async ({ page }) => {
     // Navigate to BlazeDemo app and validate title
     const flightPage = new FlightSearchPage(page);
     await flightPage.goTo();
@@ -12,6 +11,13 @@ test('@Regression TC01_Search flights and validate source & destination', async 
     await flightPage.selectFrom();
     await flightPage.selectTo();
     await flightPage.clickFindFlights();
+
+    // Store flightPage in context for use in tests
+    page.flightPage = flightPage;
+});
+
+test('@Regression TC01_Search flights and validate source & destination', async ({ page }) => {
+    const flightPage = page.flightPage;
 
     // Valiate the “Flights from <source> to <destination>” on flight search results page 
     const selectedFrom = flightPage.getSelectedFrom();
@@ -23,16 +29,7 @@ test('@Regression TC01_Search flights and validate source & destination', async 
 });
 
 test('@Regression TC02_Search flights and validate departure and arrival headers', async ({ page }) => {
-    
-    // Navigate to BlazeDemo app and validate title
-    const flightPage = new FlightSearchPage(page);
-    await flightPage.goTo();
-    await expect(page).toHaveTitle('BlazeDemo');
-
-    // Select source and destination
-    await flightPage.selectFrom();
-    await flightPage.selectTo();
-    await flightPage.clickFindFlights();
+    const flightPage = page.flightPage;
 
     // Validate the departure and arrival headers on the flight search results page
     const selectedFrom = flightPage.getSelectedFrom();
@@ -44,16 +41,7 @@ test('@Regression TC02_Search flights and validate departure and arrival headers
 });
 
 test('@Regression TC03_Book a flight and validate confirmation', async ({ page }) => {
-    
-    // Navigate to BlazeDemo app and validate title
-    const flightPage = new FlightSearchPage(page);
-    await flightPage.goTo();
-    await expect(page).toHaveTitle('BlazeDemo');
-
-    // Select source and destination
-    await flightPage.selectFrom();
-    await flightPage.selectTo();
-    await flightPage.clickFindFlights();
+    const flightPage = page.flightPage;
 
     // Select a flight from the search results
     await flightPage.selectChooseThisFlight();
@@ -72,6 +60,5 @@ test('@Regression TC03_Book a flight and validate confirmation', async ({ page }
     // Validate the confirmation message on the confirmation page
     const confirmationMessage = await flightPage.getConfirmationMessage();
     await expect(confirmationMessage).toBe('Thank you for your purchase today!');
-
 
 });
