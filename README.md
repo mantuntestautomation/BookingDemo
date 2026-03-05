@@ -19,13 +19,14 @@ dotenv – Uses dot env package to manage environment variables (Command: npm in
 globalSetup.js - Utility function used for environment set up based on the selected environment
 
 **Test Enhancements**
-Tag based execution – Use tags @smoke or @regression to run specific sets of tests.
+Tag based execution – Use tags @regression to run specific sets of tests.
 Screenshots on Pass/Fail – Takes screenshots at the end of every test and attaches them to the Playwright HTML report.
 Video Recording on Failure – Automatically records videos when tests fail for easier debugging.
 Parallel Execution – Configured for cross-browser parallel execution across Chromium, Firefox, and WebKit.
 
 **Test Data Management**
 JSON-based Test Data – Page classes consume dynamic data stored in JSON files to support test data-driven development.
+Faker.js Integration – Generates random test data like names, email etc., dynamically.
 
 **Running Tests**
 To run tests in different environments with different browsers, you can use the following command structure:

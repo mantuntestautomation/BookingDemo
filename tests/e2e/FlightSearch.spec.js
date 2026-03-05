@@ -2,9 +2,9 @@ const { test, expect } = require('@playwright/test');
 const { FlightSearchPage } = require('../pages/FlightSearchPage');
 
 test('@Regression TC01_Search flights and validate source & destination', async ({ page }) => {
-    const flightPage = new FlightSearchPage(page);
     
     // Navigate to BlazeDemo app and validate title
+    const flightPage = new FlightSearchPage(page);
     await flightPage.goTo();
     await expect(page).toHaveTitle('BlazeDemo');
 
@@ -16,14 +16,16 @@ test('@Regression TC01_Search flights and validate source & destination', async 
     // Valiate the “Flights from <source> to <destination>” on flight search results page 
     const selectedFrom = flightPage.getSelectedFrom();
     const selectedTo = flightPage.getSelectedTo();
-    await flightPage.validateFlightSourceDestination();
+    const headerText = await flightPage.flightResultsHeader.textContent();
+    const expectedText = `Flights from ${selectedFrom} to ${selectedTo}:`;
+    await expect(headerText.trim()).toBe(expectedText);
     
 });
 
 test('@Regression TC02_Search flights and validate departure and arrival headers', async ({ page }) => {
-    const flightPage = new FlightSearchPage(page);
     
     // Navigate to BlazeDemo app and validate title
+    const flightPage = new FlightSearchPage(page);
     await flightPage.goTo();
     await expect(page).toHaveTitle('BlazeDemo');
 
@@ -42,9 +44,9 @@ test('@Regression TC02_Search flights and validate departure and arrival headers
 });
 
 test('@Regression TC03_Book a flight and validate confirmation', async ({ page }) => {
-    const flightPage = new FlightSearchPage(page);
     
     // Navigate to BlazeDemo app and validate title
+    const flightPage = new FlightSearchPage(page);
     await flightPage.goTo();
     await expect(page).toHaveTitle('BlazeDemo');
 

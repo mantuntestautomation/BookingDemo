@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: false,
   retries: 0,
-  workers: 1,
+  workers: 3,
   reporter: [['html', {open: 'always'}], ['allure-playwright']],
   timeout: 30000,
 

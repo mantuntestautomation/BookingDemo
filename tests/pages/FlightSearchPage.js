@@ -11,7 +11,7 @@ class FlightSearchPage {
         this.resultDestination = page.locator("//th[contains(., 'Departs:')]/following-sibling::th[1]");
         this.selectedFrom = null;
         this.selectedTo = null;
-        this.flightResultsHeader = page.locator("//div[@class='container'] //h3");
+        this.flightResultsHeader = page.locator("//div[@class='container']//h3");
         this.chooseThisFlightBtn = page.getByRole('button', { name: 'Choose This Flight' });
         this.nameInput = page.locator("#inputName");
         this.addressInput = page.locator("#address");
@@ -24,7 +24,7 @@ class FlightSearchPage {
         this.creditCardYearInput = page.locator("#creditCardYear");
         this.nameOnCardInput = page.locator("#nameOnCard");
         this.purchaseFlightBtn = page.getByRole('button', { name: 'Purchase Flight' });
-        this.confirmationMessage = page.locator("//div[@class='container'] //h1");
+        this.confirmationMessage = page.locator("//div[@class='container']//h1");
     }
 
      async goTo()
@@ -68,12 +68,6 @@ class FlightSearchPage {
 
     async clickFindFlights() {
         await this.findFlightsBtn.click();
-    }
-
-    async validateFlightSourceDestination() {
-        const headerText = await this.flightResultsHeader.textContent();
-        const expectedText = `Flights from ${this.selectedFrom} to ${this.selectedTo}:`;
-        await expect(headerText.trim()).toBe(expectedText);
     }
 
     async validateDepartureArrivalHeaders() {
