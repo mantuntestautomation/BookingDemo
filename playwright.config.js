@@ -13,7 +13,7 @@ export default defineConfig({
   use: {
     headless: false,
     actionTimeout: 5000,
-    viewport: {width: 1960, height: 1080},
+    viewport: {width: 1920, height: 1080},
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
     video: 'retain-on-failure',
