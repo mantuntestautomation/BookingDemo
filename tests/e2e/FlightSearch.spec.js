@@ -1,64 +1,73 @@
-const { test, expect } = require('@playwright/test');
-const { FlightSearchPage } = require('../pages/FlightSearchPage');
+const { test, expect } = require('../fixtures/baseFixtures');
+const { APP_CONSTANTS } = require('../constants/appConstants');
 
-test.beforeEach(async ({ page }) => {
-    // Navigate to BlazeDemo app and validate title
-    const flightPage = new FlightSearchPage(page);
-    await flightPage.goTo();
-    await expect(page).toHaveTitle('BlazeDemo');
+test.describe('Flight Search and Booking Regression Suite', () => {
 
-    // Select source and destination
-    await flightPage.selectFrom();
-    await flightPage.selectTo();
-    await flightPage.clickFindFlights();
+    /**
+     * Reusable logic to search for a flight with random cities
+     * This fulfills the DRY principle requirement.
+     */
+    async function searchForRandomFlight(flightSearchPage) {
+        await test.step('Navigate to Application', async () => {
+            await flightSearchPage.goTo();
+            await flightSearchPage.validateTitle(APP_CONSTANTS.TITLES.MAIN_PAGE);
+        });
 
-    // Store flightPage in context for use in tests
-    page.flightPage = flightPage;
-});
+        await test.step('Select Random Departure and Destination Cities', async () => {
+            // No hardcoding: count items and select randomly in the POM
+            await flightSearchPage.selectRandomFrom();
+            await flightSearchPage.selectRandomTo();
+        });
 
-test('@Regression TC01_Search flights and validate source & destination', async ({ page }) => {
-    const flightPage = page.flightPage;
+        await test.step('Click Find Flights', async () => {
+            await flightSearchPage.clickFindFlights();
+        });
+    }
 
-    // Valiate the “Flights from <source> to <destination>” on flight search results page 
-    const selectedFrom = flightPage.getSelectedFrom();
-    const selectedTo = flightPage.getSelectedTo();
-    const headerText = await flightPage.flightResultsHeader.textContent();
-    const expectedText = `Flights from ${selectedFrom} to ${selectedTo}:`;
-    await expect(headerText.trim()).toBe(expectedText);
-    
-});
+    test('@Regression TC01_Search flights and validate header', async ({ flightSearchPage }) => {
+        await searchForRandomFlight(flightSearchPage);
 
-test('@Regression TC02_Search flights and validate departure and arrival headers', async ({ page }) => {
-    const flightPage = page.flightPage;
+        await test.step('Validate Search Results Header', async () => {
+            const selectedFrom = flightSearchPage.selectedFrom;
+            const selectedTo = flightSearchPage.selectedTo;
+            const headerText = await flightSearchPage.flightResultsHeader.textContent();
+            const expectedText = `Flights from ${selectedFrom} to ${selectedTo}:`;
+            expect(headerText.trim()).toBe(expectedText);
+        });
+    });
 
-    // Validate the departure and arrival headers on the flight search results page
-    const selectedFrom = flightPage.getSelectedFrom();
-    const selectedTo = flightPage.getSelectedTo();
-    const header = await flightPage.validateDepartureArrivalHeaders();
-    await expect(header.source).toBe(selectedFrom);
-    await expect(header.destination).toBe(selectedTo);
-    
-});
+    test('@Regression TC02_Search flights and validate column headers', async ({ flightSearchPage }) => {  
+        await searchForRandomFlight(flightSearchPage);
 
-test('@Regression TC03_Book a flight and validate confirmation', async ({ page }) => {
-    const flightPage = page.flightPage;
+        await test.step('Validate Departure and Arrival Column Headers', async () => {
+            const selectedFrom = flightSearchPage.selectedFrom;
+            const selectedTo = flightSearchPage.selectedTo;
+            const header = await flightSearchPage.getHeaderValues();
 
-    // Select a flight from the search results
-    await flightPage.selectChooseThisFlight();
+            expect(header.source).toBe(selectedFrom);
+            expect(header.destination).toBe(selectedTo);
+        });
+    });
 
-    // after choosing a flight we should land on the purchase page
-    await expect(page).toHaveURL(/.*purchase\.php/);
-    // confirm purchase form is visible
-    await expect(flightPage.purchaseFlightBtn).toBeVisible();
+    test('@Regression TC03_Book a random flight and validate confirmation', async ({ flightSearchPage }) => {
+        await searchForRandomFlight(flightSearchPage);
 
-    // Fill passenger details on the purchase page
-    await flightPage.fillPassengerDetails();
+        await test.step('Select a Random Flight from results', async () => {
+            // Count number of results and select randomly
+            await flightSearchPage.selectRandomFlight();
+            await flightSearchPage.validateURL(new RegExp(APP_CONSTANTS.ENDPOINTS.PURCHASE));
+        });
 
-    // Click on the “Purchase Flight” button
-    await flightPage.clickPurchaseFlight();
+        await test.step('Fill Passenger Details and Purchase', async () => {
+            await expect(flightSearchPage.purchaseFlightBtn).toBeVisible();
+            await flightSearchPage.fillPassengerDetails();
+            await flightSearchPage.clickPurchase();
+        });
 
-    // Validate the confirmation message on the confirmation page
-    const confirmationMessage = await flightPage.getConfirmationMessage();
-    await expect(confirmationMessage).toBe('Thank you for your purchase today!');
+        await test.step('Validate Confirmation Message', async () => {
+            const confirmationMessage = await flightSearchPage.getConfirmationText();
+            expect(confirmationMessage).toBe(APP_CONSTANTS.MESSAGES.PURCHASE_SUCCESS);
+        });
+    });
 
 });

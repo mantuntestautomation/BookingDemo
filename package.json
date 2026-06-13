@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test:sit": "cross-env Test_Env=sit npx playwright test"
+    "test:sit": "cross-env TEST_ENV=sit npx playwright test",
+    "test:dev": "cross-env TEST_ENV=dev npx playwright test",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -13,12 +16,17 @@
     "@faker-js/faker": "^10.3.0",
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.0.2",
-    "allure-playwright": "^3.4.5"
+    "allure-playwright": "^3.4.5",
+    "eslint": "^9.0.0",
+    "eslint-plugin-playwright": "^1.6.0",
+    "prettier": "^3.2.5"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
     "crypto-js": "^4.2.0",
     "csv-parse": "^6.1.0",
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0"
   }
 }

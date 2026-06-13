@@ -1,9 +1,10 @@
-const { expect } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const { faker } = require('@faker-js/faker');
+const { BasePage } = require('./BasePage');
 
-class FlightSearchPage {
+class FlightSearchPage extends BasePage {
     constructor(page) {
-        this.page = page;
+        super(page);
         this.fromSelect = page.locator("//select[@name='fromPort']");
         this.toSelect = page.locator("//select[@name='toPort']");
         this.findFlightsBtn = page.getByRole('button', { name: 'Find Flights' });
@@ -27,42 +28,31 @@ class FlightSearchPage {
         this.confirmationMessage = page.locator("//div[@class='container']//h1");
     }
 
-     async goTo()
-    {
-        await this.page.goto(process.env.BASE_URL);
+    async goTo() {
+        await this.navigate(process.env.BASE_URL);
     }
 
-    getRandomIndex(count) {
-        return Math.floor(Math.random() * count);
-    }
-
-    async selectFrom() {
+    /**
+     * Randomly selects a city from the source dropdown
+     * No hardcoding - counts items and selects randomly
+     */
+    async selectRandomFrom() {
         const options = await this.fromSelect.locator('option').all();
-        const count = options.length;
-        if (count === 0) {
-            throw new Error('No options available in the source dropdown');
-        }
-        const randomIndex = this.getRandomIndex(count);
+        const randomIndex = this.getRandomIndex(options.length);
         this.selectedFrom = await options[randomIndex].textContent();
-        await this.fromSelect.selectOption({ label: this.selectedFrom });
-    }
-
-    async selectTo() {
-        const options = await this.toSelect.locator('option').all();
-        const count = options.length;
-        if (count === 0) {
-            throw new Error('No options available in the destination dropdown');
-        }
-        const randomIndex = this.getRandomIndex(count);
-        this.selectedTo = await options[randomIndex].textContent();
-        await this.toSelect.selectOption({ label: this.selectedTo });
-    }
-
-    getSelectedFrom() {
+        await this.fromSelect.selectOption({ index: randomIndex });
         return this.selectedFrom;
     }
 
-    getSelectedTo() {
+    /**
+     * Randomly selects a city from the destination dropdown
+     * No hardcoding - counts items and selects randomly
+     */
+    async selectRandomTo() {
+        const options = await this.toSelect.locator('option').all();
+        const randomIndex = this.getRandomIndex(options.length);
+        this.selectedTo = await options[randomIndex].textContent();
+        await this.toSelect.selectOption({ index: randomIndex });
         return this.selectedTo;
     }
 
@@ -70,7 +60,7 @@ class FlightSearchPage {
         await this.findFlightsBtn.click();
     }
 
-    async validateDepartureArrivalHeaders() {
+    async getHeaderValues() {
         const source = await this.resultSource.first().textContent();
         const destination = await this.resultDestination.first().textContent();
         return {
@@ -79,8 +69,10 @@ class FlightSearchPage {
         };
     }
 
-    async selectChooseThisFlight() {
-        // count available "Choose This Flight" buttons and click a random one
+    /**
+     * Counts number of flights and randomly selects one
+     */
+    async selectRandomFlight() {
         const buttons = await this.chooseThisFlightBtn.all();
         const count = buttons.length;
         if (count === 0) {
@@ -90,11 +82,11 @@ class FlightSearchPage {
         await buttons[randomIndex].click();
     }
 
-    generateRandomPassengerDetails() {
+    async fillPassengerDetails() {
         const cardTypes = ['visa', 'American Express'];
         const randomCardType = cardTypes[this.getRandomIndex(cardTypes.length)];
         
-        return {
+        const details = {
             name: faker.person.fullName(),
             address: faker.location.streetAddress(),
             city: faker.location.city(),
@@ -106,34 +98,27 @@ class FlightSearchPage {
             creditCardYear: String(new Date().getFullYear() + this.getRandomIndex(10) + 1),
             nameOnCard: faker.person.fullName()
         };
-    }
-    
-    async fillPassengerDetails(details) {
-        const passengerDetails = details || this.generateRandomPassengerDetails();
         
-        await this.nameInput.fill(passengerDetails.name);
-        await this.addressInput.fill(passengerDetails.address);
-        await this.cityInput.fill(passengerDetails.city);
-        await this.stateInput.fill(passengerDetails.state);
-        await this.zipCodeInput.fill(passengerDetails.zipCode);
-        await this.cardTypeSelect.selectOption(passengerDetails.cardType);
-        await this.creditCardNumberInput.fill(passengerDetails.creditCardNumber);
-        await this.creditCardMonthInput.fill(passengerDetails.creditCardMonth);
-        await this.creditCardYearInput.fill(passengerDetails.creditCardYear);
-        await this.nameOnCardInput.fill(passengerDetails.nameOnCard);
-        
-        return passengerDetails;
+        await this.nameInput.fill(details.name);
+        await this.addressInput.fill(details.address);
+        await this.cityInput.fill(details.city);
+        await this.stateInput.fill(details.state);
+        await this.zipCodeInput.fill(details.zipCode);
+        await this.cardTypeSelect.selectOption(details.cardType);
+        await this.creditCardNumberInput.fill(details.creditCardNumber);
+        await this.creditCardMonthInput.fill(details.creditCardMonth);
+        await this.creditCardYearInput.fill(details.creditCardYear);
+        await this.nameOnCardInput.fill(details.nameOnCard);
     }
 
-    async clickPurchaseFlight() {
+    async clickPurchase() {
         await this.purchaseFlightBtn.click();
     }
 
-    async getConfirmationMessage() {
+    async getConfirmationText() {
         const message = await this.confirmationMessage.textContent();
-        return message.trim();
+        return message ? message.trim() : '';
     }
-    
 }
 
 module.exports = { FlightSearchPage };
